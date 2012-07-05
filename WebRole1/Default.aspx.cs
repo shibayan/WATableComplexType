@@ -22,7 +22,7 @@ namespace WebRole1
 
             tableClient.CreateTableIfNotExist("Comment");
 
-            var context = new ComplexTypeTableServiceContext(tableClient.BaseUri.AbsoluteUri, tableClient.Credentials);
+            var context = new CommentServiceContext(tableClient.BaseUri.AbsoluteUri, tableClient.Credentials);
 
             if (IsPostBack)
             {
@@ -41,11 +41,11 @@ namespace WebRole1
                     }
                 };
 
-                context.AddObject("Comment", comment);
+                context.AddObject(comment);
                 context.SaveChanges();
             }
 
-            ListView1.DataSource = context.CreateQuery<Comment>("Comment").ToList();
+            ListView1.DataSource = context.Comment.ToList();
             ListView1.DataBind();
         }
     }

@@ -21,6 +21,9 @@ namespace WebRole1
             WritingEntity += OnWritingEntity;
         }
 
+        private const string Separator = "_";
+        private const string CountSuffix = Separator + "Count";
+
         private static readonly XNamespace m = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
         private static readonly XNamespace d = "http://schemas.microsoft.com/ado/2007/08/dataservices";
 
@@ -33,7 +36,7 @@ namespace WebRole1
 
                 if (!TypeHelpers.IsComplexType(propertyType))
                 {
-                    var element = properties.Element(d + prefix + "_" + property.Name);
+                    var element = properties.Element(d + prefix + Separator + property.Name);
 
                     if (element != null)
                     {
@@ -44,13 +47,13 @@ namespace WebRole1
                 {
                     propertyValue = TypeHelpers.Create(propertyType);
 
-                    BindCollection(propertyValue, propertyType.GetGenericArguments()[0], prefix + "_" + property.Name, properties);
+                    BindCollection(propertyValue, propertyType.GetGenericArguments()[0], prefix + Separator + property.Name, properties);
                 }
                 else
                 {
                     propertyValue = TypeHelpers.Create(propertyType);
 
-                    BindModel(propertyValue, propertyType, prefix + "_" + property.Name, properties);
+                    BindModel(propertyValue, propertyType, prefix + Separator + property.Name, properties);
                 }
 
                 property.SetValue(model, propertyValue, null);
@@ -66,7 +69,7 @@ namespace WebRole1
 
                 if (!TypeHelpers.IsComplexType(propertyType))
                 {
-                    var element = new XElement(d + prefix + "_" + property.Name);
+                    var element = new XElement(d + prefix + Separator + property.Name);
 
                     element.SetValue(propertyValue);
 
@@ -74,18 +77,18 @@ namespace WebRole1
                 }
                 else if (TypeHelpers.IsCollection(propertyType))
                 {
-                    UnbindCollection(propertyValue, propertyType.GetGenericArguments()[0], prefix + "_" + property.Name, properties);
+                    UnbindCollection(propertyValue, propertyType.GetGenericArguments()[0], prefix + Separator + property.Name, properties);
                 }
                 else
                 {
-                    UnbindModel(propertyValue, propertyType, prefix + "_" + property.Name, properties);
+                    UnbindModel(propertyValue, propertyType, prefix + Separator + property.Name, properties);
                 }
             }
         }
 
         private static void BindCollection(object model, Type modelType, string prefix, XElement properties)
         {
-            var element = properties.Element(d + prefix + "_Count");
+            var element = properties.Element(d + prefix + CountSuffix);
 
             if (element == null || string.IsNullOrEmpty(element.Value))
             {
@@ -100,7 +103,7 @@ namespace WebRole1
 
                 if (!TypeHelpers.IsComplexType(modelType))
                 {
-                    var elem = properties.Element(d + prefix + "_" + i);
+                    var elem = properties.Element(d + prefix + Separator + i);
 
                     if (elem != null)
                     {
@@ -111,7 +114,7 @@ namespace WebRole1
                 {
                     value = TypeHelpers.Create(modelType);
 
-                    BindModel(value, modelType, prefix + "_" + i, properties);
+                    BindModel(value, modelType, prefix + Separator + i, properties);
                 }
 
                 ((IList)model).Add(value);
@@ -126,7 +129,7 @@ namespace WebRole1
             {
                 if (!TypeHelpers.IsComplexType(value.GetType()))
                 {
-                    var element = new XElement(d + prefix + "_" + i);
+                    var element = new XElement(d + prefix + Separator + i);
 
                     element.SetValue(value);
 
@@ -134,13 +137,13 @@ namespace WebRole1
                 }
                 else
                 {
-                    UnbindModel(value, modelType, prefix + "_" + i, properties);
+                    UnbindModel(value, modelType, prefix + Separator + i, properties);
                 }
 
                 i++;
             }
 
-            properties.Add(new XElement(d + prefix + "_Count", i));
+            properties.Add(new XElement(d + prefix + CountSuffix, i));
         }
 
         private static void OnReadingEntity(object sender, ReadingWritingEntityEventArgs e)
