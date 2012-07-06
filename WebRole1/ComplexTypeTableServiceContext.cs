@@ -29,7 +29,7 @@ namespace WebRole1
 
         private static void BindModel(object model, Type modelType, string prefix, XElement properties)
         {
-            foreach (var property in modelType.GetProperties())
+            foreach (var property in modelType.GetProperties().Where(p => p.CanRead && p.CanWrite))
             {
                 var propertyType = property.PropertyType;
                 var propertyValue = default(object);
@@ -62,7 +62,7 @@ namespace WebRole1
 
         private static void UnbindModel(object model, Type modelType, string prefix, XElement properties)
         {
-            foreach (var property in modelType.GetProperties())
+            foreach (var property in modelType.GetProperties().Where(p => p.CanRead && p.CanWrite))
             {
                 var propertyType = property.PropertyType;
                 var propertyValue = property.GetValue(model, null);
@@ -150,7 +150,7 @@ namespace WebRole1
         {
             var properties = e.Data.Descendants(m + "properties").First();
 
-            foreach (var property in e.Entity.GetType().GetProperties())
+            foreach (var property in e.Entity.GetType().GetProperties().Where(p => p.CanRead && p.CanWrite))
             {
                 var propertyType = property.PropertyType;
 
@@ -178,7 +178,7 @@ namespace WebRole1
         {
             var properties = e.Data.Descendants(m + "properties").First();
 
-            foreach (var property in e.Entity.GetType().GetProperties())
+            foreach (var property in e.Entity.GetType().GetProperties().Where(p=>p.CanRead && p.CanWrite))
             {
                 var propertyType = property.PropertyType;
 
